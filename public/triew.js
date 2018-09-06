@@ -13,52 +13,70 @@ var generateTreeHTML = function (tree) {
     return res;
 }
 
-var generateTreeSVG = function (treeObj, id, xStart, xFinish, yStart, yFinish) {
-    res = '<g id="svgTree'+id+'" class="tree">';
-    const spaceX = (xFinish-xStart);
-    const spaceY = (yFinish-yStart);
+var generateTreeSVG = function (treeObj, id, xStart, xFinish, yStart, levels) {
+    let res = '<g id="svgTree' + id + '" class="tree">';
+    const spaceX = (xFinish - xStart);
+    const spaceY = 500 / levels;
+    console.log("levels"+levels +" space y; "+  spaceY);
     const ys = yStart;
-    /*if(spaceX < 30 || spaceY < 30)
-        return 'Not enough space for the rest of the tree';*/
+    
+    // Center values
     const cx = Math.floor(xStart + (spaceX / 2));
-    const cy = yStart + 25;
-    /*if (treeObj.val){
-        res = res + '<ellipse cx="'+cx+'" cy="' + cy + '" rx="20" ry="20" />' + //TODO: edit here to match val size
-            'class="svgNode" />'; 
-    }*/
+
+    // const cy = yStart + 25;
+    const cy = yStart + (spaceY / 2);
+    
     if (treeObj.children) {
         res = res + '<g>';
-        const ysChildren = ys + 50; 
+        // const ysChildren = ys + 50; 
+        const ysChildren = ys + spaceY; 
         let xsChildren = xStart;
-        const childrenSpaceX = spaceX/(Object.keys(treeObj.children)).length;
+        // Divided in the ammound of child nodes
+        const childrenSpaceX = spaceX / (Object.keys(treeObj.children)).length;
         let xfChildren = xsChildren+ childrenSpaceX;
-        const ccy = ysChildren+25;
+        // const ccy = ysChildren+25;
+        const ccy = ysChildren + (spaceY / 4);
         let ccx = xsChildren+(childrenSpaceX/2);
         for(child in treeObj.children) {
             res = res + '<line x1="'+cx+'" y1="'+cy+'" x2="'+ccx+'" y2="'+ccy+'" class="svgLine"/>';
             ccx = ccx + childrenSpaceX
         }
-        res = res + '<ellipse id="'+treeObj.id+'" cx="'+cx+'" cy="' + cy + '" rx="20" ry="20" ' + //TODO: edit here to match val size
-            'class="svgNode" >'+
-            '<animate attributeName="fill" attributeType="XML" '+
-            'id="'+treeObj.id+'at" from="#3CB1FF" to="#EED922" dur="1s" begin="click" fill="freeze"/>'+
-            '</ellipse>' + '<text x="'+(cx-5)+'" y="'+(cy+5)+'">'+treeObj.val+'</text>';      
+        res = res + this.getEllipse(cx, cy, (cx-5), (cy+5), treeObj.val, treeObj.id);
         for(child in treeObj.children){
-            res = res + generateTreeSVG(treeObj.children[child], id+''+child, xsChildren, xfChildren, ysChildren, yFinish);
+            res = res + generateTreeSVG(treeObj.children[child], id+''+child, xsChildren, xfChildren, ysChildren);
             xsChildren = xfChildren;
             xfChildren = xfChildren + childrenSpaceX;
         }
         res = res + "</g>";
-    } else {
-        res = res + '<ellipse id="'+treeObj.id+'" cx="'+cx+'" cy="' + cy + '" rx="20" ry="20" ' + //TODO: edit here to match val size
-            ' class="svgNode" >'+
-            '<animate attributeName="fill" attributeType="XML" '+
-            'id="'+treeObj.id+'at" from="#3CB1FF" to="#EED922" dur="1s" begin="click" fill="freeze"/>'+
-            '</ellipse>' + '<text x="'+(cx-5)+'" y="'+(cy+5)+'">'+treeObj.val+'</text>';      
+    } else { 
+        res = res + this.getEllipse(cx, cy, (cx-5), (cy+5), treeObj.val, treeObj.id);
     }     
     res = res + "</g>";     
     return res;     
 }     
+
+function getEllipse(cx, cy, x, y, val, id) {
+    //TODO: edit here to match val size
+    return  '<ellipse id="' + id + '" cx="' + cx + '" cy="' + cy + '" rx="20" ry="20" ' + 
+            'class="svgNode" >'+
+            '<animate attributeName="fill" attributeType="XML" '+
+            'id="' + id + 'at" from="#3CB1FF" to="#EED922" dur="1s" begin="click" fill="freeze"/>'+
+            '</ellipse>' + '<text x="' + x + '" y="' + y + '">' + val + '</text>'; 
+}
+
+function getLevelCount(treeObj) {
+    let count = 1;
+    if (treeObj.children) {
+        let may = 0, cu;
+        treeObj.children.forEach(child => {
+            cu = getLevelCount(child);
+            if (may < cu) 
+                may = cu; 
+        });
+        count += may;
+    }
+    return count;
+}
 
 /**
  * 
@@ -66,13 +84,8 @@ var generateTreeSVG = function (treeObj, id, xStart, xFinish, yStart, yFinish) {
  * { the children is an array of json objects } tree 
  */
 var getTree = function (tree) {     
-    //treeObj = JSON.parse(tree);
-    // var element = document.getElementById('p2');
-    // var positionInfo = element.getBoundingClientRect();
-    // var width = positionInfo.width;
-    // console.log(width);
-    // return generateTreeSVG(tree, 1, 0, width, 0, 400);
-    return generateTreeSVG(tree, 1, 0, 1000, 0, 400);
+    let count = getLevelCount(tree);
+    return generateTreeSVG(tree, 1, 0, 800, 0, count);
 }
 
 treeE = {

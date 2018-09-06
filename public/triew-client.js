@@ -1,8 +1,4 @@
 
-//document.getElementById("p1").innerHTML=generateTreeHTML(treeE)
-// document.getElementById("p2").innerHTML=getTree(treeE)
-
-
 /**
  * 
  * @param {array of ordered ids to change color} treeNodes 
