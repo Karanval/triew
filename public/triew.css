@@ -1,0 +1,51 @@
+/* .container {
+    height: 400px;
+    position: relative;
+    border-left: 5px solid blue;
+    border-right: 5px solid blue;
+} */
+
+.tree {
+    align-items: stretch;
+    flex-basis: 0;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-direction: column;
+    display: block;
+    min-height: -webkit-min-content;
+    min-height: -moz-min-content;
+    min-height: min-content;
+}
+
+.ncontainer {
+    display: flex;
+    justify-content: center;
+    padding: 5px;
+}
+
+.node {
+    border: 2px solid red;
+    border-radius: 25px;
+    padding: 5px;
+    justify-content: center;
+    display: flex;
+}
+
+.children {
+    display: flex; 
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: stretch;
+}
+
+.svgNode {
+    fill: #3CB1FF;
+    border: 3px solid #209cee;/*<-main light: 3CB1FF dark: 0663A1*/
+    /* call to action: EED922 dark A16208 */
+}
+
+.svgLine {
+    stroke: #3CB1FF;
+    stroke-opacity: 0.8;
+    stroke-width: 3px;
+}
