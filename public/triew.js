@@ -13,10 +13,10 @@ var generateTreeHTML = function (tree) {
     return res;
 }
 
-var generateTreeSVG = function (treeObj, id, xStart, xFinish, yStart, levels) {
-    let res = '<g id="svgTree' + id + '" class="tree">';
+var generateTreeSVG = function (treeObj, xStart, xFinish, yStart, levels) {
+    let res = '<g id="svgTree' + treeObj.id + '" class="tree">';
     const spaceX = (xFinish - xStart);
-    const spaceY = 500 / levels;
+    const spaceY = Math.floor(500 / levels);
     console.log("levels"+levels +" space y; "+  spaceY);
     const ys = yStart;
     
@@ -24,7 +24,7 @@ var generateTreeSVG = function (treeObj, id, xStart, xFinish, yStart, levels) {
     const cx = Math.floor(xStart + (spaceX / 2));
 
     // const cy = yStart + 25;
-    const cy = yStart + (spaceY / 2);
+    const cy = yStart + Math.floor(spaceY / 2);
     
     if (treeObj.children) {
         res = res + '<g>';
@@ -35,7 +35,7 @@ var generateTreeSVG = function (treeObj, id, xStart, xFinish, yStart, levels) {
         const childrenSpaceX = spaceX / (Object.keys(treeObj.children)).length;
         let xfChildren = xsChildren+ childrenSpaceX;
         // const ccy = ysChildren+25;
-        const ccy = ysChildren + (spaceY / 4);
+        const ccy = ysChildren + (spaceY / 2);
         let ccx = xsChildren+(childrenSpaceX/2);
         for(child in treeObj.children) {
             res = res + '<line x1="'+cx+'" y1="'+cy+'" x2="'+ccx+'" y2="'+ccy+'" class="svgLine"/>';
@@ -43,7 +43,8 @@ var generateTreeSVG = function (treeObj, id, xStart, xFinish, yStart, levels) {
         }
         res = res + this.getEllipse(cx, cy, (cx-5), (cy+5), treeObj.val, treeObj.id);
         for(child in treeObj.children){
-            res = res + generateTreeSVG(treeObj.children[child], id+''+child, xsChildren, xfChildren, ysChildren);
+            // res = res + generateTreeSVG(treeObj.children[child], id+''+child, xsChildren, xfChildren, ysChildren, levels);
+            res = res + generateTreeSVG(treeObj.children[child], xsChildren, xfChildren, ysChildren, levels);
             xsChildren = xfChildren;
             xfChildren = xfChildren + childrenSpaceX;
         }
@@ -57,7 +58,7 @@ var generateTreeSVG = function (treeObj, id, xStart, xFinish, yStart, levels) {
 
 function getEllipse(cx, cy, x, y, val, id) {
     //TODO: edit here to match val size
-    return  '<ellipse id="' + id + '" cx="' + cx + '" cy="' + cy + '" rx="20" ry="20" ' + 
+    return  '<ellipse id="' + id + '" cx="' + cx + '" cy="' + cy + '" rx="25" ry="25" ' + 
             'class="svgNode" >'+
             '<animate attributeName="fill" attributeType="XML" '+
             'id="' + id + 'at" from="#3CB1FF" to="#EED922" dur="1s" begin="click" fill="freeze"/>'+
@@ -85,33 +86,24 @@ function getLevelCount(treeObj) {
  */
 var getTree = function (tree) {     
     let count = getLevelCount(tree);
-    return generateTreeSVG(tree, 1, 0, 800, 0, count);
+    return generateTreeSVG(tree, 0, 800, 0, count);
 }
 
-treeE = {
-    val: "A",
-    id:"1",
-    children: [
-        {
-            val: "B",
-            id: "11",
-            children: [
+// treeE = {"val": 11, "id": 1, "children": [{"val": 29, "id": 10, "children": [{"val": 21, "id": 100}]}, {"val": 44, "id": 11, "children": [{"val": 1, "id": 110}]}, {"val": 1, "id": 12, "children": [{"val": 30, "id": 120}]}]};
+treeE = {val: "A",id:"1",children: [{
+            val: "B", id: "11", children: [
                 {val: "D", id: "111"},
                 {val: "E", children: [{
                     val:"H",
                     children:[{val:"M"},{val:"N"},{val:"O"}]},
-                    {val:"I"}]}
-            ]
+                    {val:"I"}]}  ]
         }, {
-            val: "C",
-            id: "12",
-            children: [
+            val: "C",  id: "12",  children: [
                 {val:"F",children: [{val:"J"}]},
                 {val:"G", children: [{val:"K"}, {val:"L"}]}
             ]
         }, {
-            val: "Ñ",
-            id: "13"
+            val: "Ñ", id: "13"
         }
     ]
 };
